@@ -1,0 +1,117 @@
+
+$screen-sm-min: 576px;
+$screen-md-min: 768px;
+$screen-lg-min: 1024px;
+$screen-xl-min: 1200px;
+
+@mixin sm {
+   @media (min-width: #{$screen-sm-min}) {
+       @content;
+   }
+}
+
+// Medium devices
+@mixin md {
+   @media (min-width: #{$screen-md-min}) {
+       @content;
+   }
+}
+
+// Large devices
+@mixin lg {
+   @media (min-width: #{$screen-lg-min}) {
+       @content;
+   }
+}
+
+// Extra large devices
+@mixin xl {
+   @media (min-width: #{$screen-xl-min}) {
+       @content;
+   }
+}
+
+body {
+
+  padding: 1em;
+
+  max-width: 80em;
+  margin: 0 auto;
+
+  font-family: "PT Serif", serif;
+
+  @include md {
+    padding: 2em;
+  }
+
+  @include lg {
+    padding: 4em;
+  }
+
+  header, footer, aside, h1, h2, h3, h4 {
+    font-family: "PT Sans", sans-serif;
+  }
+
+  @for $index from 1 through 4 {
+    h#{$index}{
+      color: #000;
+    }
+  }
+
+  header, footer {
+    color: #636363;
+    font-size: small;
+
+    aside {
+      float: left;
+      margin-right: .5em;
+
+      &:after {
+        padding-left: .5em;
+        content: "/";
+      }
+    }
+  }
+
+  .d3-graphic-full {
+    .placeholder-16x9 {
+      padding-top: 56.25%;
+    }
+
+    .placeholder-4x3 {
+      padding-top: 75%;
+    }
+
+    .placeholder-3x2 {
+      padding-top: 66.66%;
+    }
+
+    .placeholder-8x5 {
+      padding-top: 62.5%;
+    }
+
+    .content {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .text {
+      max-width: 50%;
+      text-align: center;
+    }
+  }
+
+}
+
+div[class^='placeholder-'], div[class*=' placeholder-'] {
+  background-color: #c0c0c0;
+  width: 100%;
+  padding-top: 100%;
+  position: relative;
+}
