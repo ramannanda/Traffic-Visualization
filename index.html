@@ -24,24 +24,27 @@
   <p>
     Inspiration:
     <ul>
-      <li>D3 Hexgrid</li>
+      <li><a href="https://github.com/larsvers/d3-hexgrid">D3 Hexgrid</a></li>
+      <li><a href="https://oasis.sandstorm.io/grain/NuTB5eaFAWRNbBcFFhegtT">Hummingbird</a></li>
     </ul>
   </p>
-	<div class="d3-graphic-full" id="container">
+	<div class="d3-graphic-full loading" id="container">
     <div class="placeholder-16x9">
-      <div class="content">
-        <div class="text">Loading Graphic...</div>
-      </div>
+      <div class="content">Loading...</div>
     </div>
-   <canvas></canvas>
   </div>
 
-  <!-- d3-hexgrid script comes first. -->
-  <script src="//unpkg.com/d3-hexgrid"></script>
-  <script src="//unpkg.com/d3"></script>
-  <script src="//unpkg.com/d3-geo-projection"></script>
-  <script src='//unpkg.com/simple-statistics'></script>
-  <script src="js/app.js"></script>
+  <!-- TODO: Gulp Replace Date -->
+  <footer>
+      <aside>March 28, 2019</aside>
+      <a href="https://github.com/RamanNanda" rel="author">Raman Nanda</a>
+  </footer>
 
+  <!-- d3-hexgrid script comes first. -->
+  <script src="js/ext/d3-hexgrid.min.js"></script>
+  <script src="js/ext/d3.min.js"></script>
+  <script src="js/ext/d3-geo-projection.min.js"></script>
+  <script src='js/ext/simple-statistics.min.js'></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

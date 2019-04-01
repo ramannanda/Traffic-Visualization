@@ -4,6 +4,9 @@ $screen-md-min: 768px;
 $screen-lg-min: 1024px;
 $screen-xl-min: 1200px;
 
+$font-family-base: "PT Serif", serif;
+$font-family-heading: "PT Sans", sans-serif;
+
 @mixin sm {
    @media (min-width: #{$screen-sm-min}) {
        @content;
@@ -38,7 +41,7 @@ body {
   max-width: 80em;
   margin: 0 auto;
 
-  font-family: "PT Serif", serif;
+  font-family: $font-family-base;
 
   @include md {
     padding: 2em;
@@ -49,7 +52,7 @@ body {
   }
 
   header, footer, aside, h1, h2, h3, h4 {
-    font-family: "PT Sans", sans-serif;
+    font-family: $font-family-heading;
   }
 
   @for $index from 1 through 4 {
@@ -71,6 +74,10 @@ body {
         content: "/";
       }
     }
+  }
+
+  footer {
+    margin-top: 8em;
   }
 
   .d3-graphic-full {
@@ -99,11 +106,18 @@ body {
       display: flex;
       align-items: center;
       justify-content: center;
+      text-align: center;
+      font-weight: bold;
+      font-size: 0.85em;
+      color: #FFF;
     }
 
-    .text {
-      max-width: 50%;
-      text-align: center;
+    div[class^='placeholder-'], div[class*=' placeholder-'] {
+      display: none;
+    }
+
+    &.loading div[class^='placeholder-'], div[class*=' placeholder-'] {
+      display: block;
     }
   }
 

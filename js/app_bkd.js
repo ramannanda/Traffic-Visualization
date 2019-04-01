@@ -1,23 +1,7 @@
-
-// var viewportWidth = $(window).width();
-// var viewportHeight = $(window).height()/2;
-// var width = viewportWidth * 0.97;
-// var height = width/1.85;
-
-// function resize(){
-//   console.log(arguments);
-// }
-
-// d3.select(window).on('resize', resize);
-
-
 function ready(geo, userData) {
   // Some set up.
-  const mult = 1.8;
-  const width = 900 * mult;
-  const height = 500 * mult;
-
-
+  const width = 900;
+  const height = 500;
   const pr = window.devicePixelRatio || 1;
 
   // Crisp canvas and context.
