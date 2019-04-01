@@ -7,13 +7,16 @@ const element = container.node();
 var geo;
 var user;
 
+var hexgrid;
+var hex;
+
 let setup = () => {
   if(!geo || !user) {
     return;
   }
 
   container.classed("loading", true);
-  const width = 1280;
+  const width = 1920;
   const height = Math.round(width/1.85);
 
   svg
@@ -28,20 +31,20 @@ let setup = () => {
   var geoPath = d3.geoPath()
     .projection(projection);
 
-  user.forEach(site => {
-    const coords = projection([+site.lng, +site.lat]);
-    site.x = coords[0];
-    site.y = coords[1];
-  });
+  // user.forEach(site => {
+  //   const coords = projection([+site.lng, +site.lat]);
+  //   site.x = coords[0];
+  //   site.y = coords[1];
+  // });
 
-  const hexgrid = d3.hexgrid()
+  hexgrid = d3.hexgrid()
     .extent([width, height])
     .geography(geo)
     .projection(projection)
     .pathGenerator(geoPath)
-    .hexRadius(4);
+    .hexRadius(6);
 
-  const hex = hexgrid(user);
+  hex = hexgrid(user);
 
   const colourScale = d3
     .scaleSequential(function(t) {
@@ -57,6 +60,9 @@ let setup = () => {
     .enter()
     .append('path')
     .attr('d', hex.hexagon())
+    .attr('id', function(d) {
+      return d.id;
+    })
     .attr('transform', d => `translate(${d.x} ${d.y})`)
     .style(
       'fill',
@@ -65,6 +71,65 @@ let setup = () => {
     .style('stroke', '#C0C0C0');
 
   container.classed("loading", false);
+};
+
+let update = (push) => {
+  if(!geo || !user) {
+    return;
+  }
+
+  var data = [{
+    City: "New York City",
+    Population: "100",
+    lat: "40.7141667",
+    lng: "-74.0063889"
+  }];
+
+  const width = 1920;
+  const height = Math.round(width/1.85);
+
+  var projection = d3.geoRobinson().fitSize(
+    [width, height],
+    geo
+  );
+
+  // data.forEach(site => {
+  //   const coords = projection([+site.lng, +site.lat]);
+  //   site.x = coords[0];
+  //   site.y = coords[1];
+  // });
+
+  hex = hexgrid(data);
+
+  const colourScale = d3
+    .scaleSequential(function(t) {
+      var tNew = Math.pow(t, 10);
+      return d3.interpolateViridis(tNew);
+    })
+    .domain([...hex.grid.extentPointDensity].reverse());
+
+  svg
+    .selectAll('g path')
+    .remove()
+    .exit()
+    .data(hex.grid.layout)
+    .enter()
+    .append('path')
+    .attr('d', hex.hexagon())
+    .attr('transform', d => `translate(${d.x} ${d.y})`)
+    .style(
+      'fill',
+      d => (!d.pointDensity ? '#fff' : colourScale(d.pointDensity))
+    )
+    .style('stroke', '#C0C0C0');
+
+  // https://pusher.com/tutorials/live-graph-d3
+
+  // https://bl.ocks.org/larsvers/ec4f4c96941b0fa97869184ab9a9fb5b
+
+  // http://bl.ocks.org/phil-pedruco/7745589
+
+  // https://bl.ocks.org/cherdarchuk/822ba3ead00a0ffdbcfd4a144e763e31
 };
 
 const geoData = d3.json(
