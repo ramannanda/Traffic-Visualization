@@ -168,7 +168,6 @@ let update = (push) => {
   // https://stackoverflow.com/questions/10884886/d3js-how-to-get-lat-log-geocoordinates-from-mouse-click
   // hex.grid.imageCenters.forEach(function(pt) { console.log(projection.invert([pt.x, pt.y])); });
 
-
   // https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/importScripts
 };
 
