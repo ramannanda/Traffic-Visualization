@@ -7,6 +7,8 @@ const element = container.node();
 var geo;
 var user;
 
+var projection;
+
 var hexgrid;
 var hex;
 
@@ -39,7 +41,7 @@ let setup = () => {
     .attr('viewBox', `0 0 ${width} ${height}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
 
-  var projection = d3.geoRobinson().fitSize(
+  projection = d3.geoRobinson().fitSize(
     [width, height],
     geo
   );
@@ -121,10 +123,10 @@ let update = (push) => {
     d3.select(`path[transform="translate(${pt.x} ${pt.y})"]`)
       .raise()
         .transition()
-        .duration(150)
+        .duration(550)
         .attr("transform", `translate(${pt.x},${pt.y})scale(5)rotate(180)`)
       .transition()
-        .delay(100)
+        .delay(500)
         .attr("transform", `translate(${pt.x},${pt.y})scale(1)rotate(-45)`);
 
       // .remove()
@@ -162,6 +164,12 @@ let update = (push) => {
   // http://bl.ocks.org/phil-pedruco/7745589
 
   // https://bl.ocks.org/cherdarchuk/822ba3ead00a0ffdbcfd4a144e763e31
+
+  // https://stackoverflow.com/questions/10884886/d3js-how-to-get-lat-log-geocoordinates-from-mouse-click
+  // hex.grid.imageCenters.forEach(function(pt) { console.log(projection.invert([pt.x, pt.y])); });
+
+
+  // https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/importScripts
 };
 
 const geoData = d3.json(

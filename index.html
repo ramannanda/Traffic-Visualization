@@ -46,5 +46,14 @@
   <script src="js/ext/d3-geo-projection.min.js"></script>
   <script src='js/ext/simple-statistics.min.js'></script>
   <script src="js/app.js"></script>
+  <script>
+      if('serviceWorker' in navigator){
+          navigator.serviceWorker.register('/service-worker.js').then(function(reg){
+              console.log("SW registration succeeded. Scope is "+ reg.scope);
+          }).catch(function(err){
+              console.error("SW registration failed with error " + err);
+          });
+      }
+  </script>
 </body>
 </html>
