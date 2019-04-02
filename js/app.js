@@ -10,6 +10,22 @@ var user;
 var hexgrid;
 var hex;
 
+d3.selection.prototype.moveToFront = function() {
+  return this.each(function() {
+    this.parentNode.appendChild(this);
+  });
+};
+
+d3.selection.prototype.moveToBack = function() {
+  return this.each(function() {
+    var firstChild = this.parentNode.firstChild;
+    if (firstChild) {
+      this.parentNode.insertBefore(this, firstChild);
+    }
+  });
+};
+
+
 let setup = () => {
   if(!geo || !user) {
     return;
@@ -30,12 +46,6 @@ let setup = () => {
 
   var geoPath = d3.geoPath()
     .projection(projection);
-
-  // user.forEach(site => {
-  //   const coords = projection([+site.lng, +site.lat]);
-  //   site.x = coords[0];
-  //   site.y = coords[1];
-  // });
 
   hexgrid = d3.hexgrid()
     .extent([width, height])
@@ -68,7 +78,17 @@ let setup = () => {
       'fill',
       d => (!d.pointDensity ? '#fff' : colourScale(d.pointDensity))
     )
-    .style('stroke', '#C0C0C0');
+    .style('stroke', '#C0C0C0')
+    .on("click",function(d){
+      d3.select(this)
+        .raise()
+        .transition()
+        .duration(100)
+        .attr("transform", `translate(${d.x},${d.y})scale(5)rotate(180)`)
+      .transition()
+        .delay(100)
+        .attr("transform", `translate(${d.x},${d.y})scale(1)rotate(0)`);
+    });
 
   container.classed("loading", false);
 };
@@ -78,7 +98,7 @@ let update = (push) => {
     return;
   }
 
-  var data = [{
+  var push = [{
     City: "New York City",
     Population: "100",
     lat: "40.7141667",
@@ -93,13 +113,25 @@ let update = (push) => {
     geo
   );
 
-  // data.forEach(site => {
-  //   const coords = projection([+site.lng, +site.lat]);
-  //   site.x = coords[0];
-  //   site.y = coords[1];
-  // });
+  dHex = hexgrid(push);
+  updatedPoints = dHex.grid.layout.filter(x => x.datapoints > 0);
 
-  hex = hexgrid(data);
+  updatedPoints.forEach(pt => {
+    //d3.selectAll(`path[transform="translate(${pt.x} ${pt.y})"]`)
+    d3.select(`path[transform="translate(${pt.x} ${pt.y})"]`)
+      .raise()
+        .transition()
+        .duration(150)
+        .attr("transform", `translate(${pt.x},${pt.y})scale(5)rotate(180)`)
+      .transition()
+        .delay(100)
+        .attr("transform", `translate(${pt.x},${pt.y})scale(1)rotate(-45)`);
+
+      // .remove()
+
+      // replace with new hexgrid
+  });
+
 
   const colourScale = d3
     .scaleSequential(function(t) {
