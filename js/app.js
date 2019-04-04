@@ -167,15 +167,38 @@ let update = (push) => {
 
   // https://stackoverflow.com/questions/10884886/d3js-how-to-get-lat-log-geocoordinates-from-mouse-click
   // hex.grid.imageCenters.forEach(function(pt) { console.log(projection.invert([pt.x, pt.y])); });
+  // var result = hex.grid.layout.map(function(pt) { var geo = projection.invert([pt.x, pt.y]); return { "lat": geo[0], "lng": geo[1], "datapoints": pt.datapoints, "cover": pt.cover, "pointDensity": pt.pointDensity } });
 
   // https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/importScripts
+
+  // http://bl.ocks.org/simenbrekken/6634070
+
+  // https://bl.ocks.org/boeric/6a83de20f780b42fadb9
+
+  //https://stackoverflow.com/questions/31730028/how-can-i-generate-a-random-sample-of-bin-counts-given-a-sequence-of-bin-probabi
+
+  // https://gist.github.com/jmilamwalters/02d34d419988b5bbc6a65f505e0cddb0#file-choose-functional-source-code-js
+
+  // https://stackoverflow.com/questions/37445495/binning-an-array-in-javascript-for-a-histogram
+
+  // https://stackoverflow.com/questions/30203362/how-to-generate-a-random-weighted-distribution-of-elements
+
+  // https://stackoverflow.com/questions/8435183/generate-a-weighted-random-number
+
 };
 
+// const geoData = d3.json(
+//   'https://raw.githubusercontent.com/larsvers/map-store/master/earth-lands-10km.json'
+// );
+// const points = d3.csv(
+//   'https://raw.githubusercontent.com/larsvers/data-store/master/cities_top_10000_world.csv'
+// );
+
 const geoData = d3.json(
-  'https://raw.githubusercontent.com/larsvers/map-store/master/earth-lands-10km.json'
+  'js/ext/earth-lands-10km.json'
 );
 const points = d3.csv(
-  'https://raw.githubusercontent.com/larsvers/data-store/master/cities_top_10000_world.csv'
+  'js/ext/cities_top_10000_world.csv'
 );
 
 Promise.all([geoData, points]).then(res => {
