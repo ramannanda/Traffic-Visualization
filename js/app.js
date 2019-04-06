@@ -5,37 +5,21 @@ const svg = container.append('svg');
 const element = container.node();
 
 var geo;
-var user;
+var data = [];
 
 var projection;
 
 var hexgrid;
 var hex;
 
-d3.selection.prototype.moveToFront = function() {
-  return this.each(function() {
-    this.parentNode.appendChild(this);
-  });
-};
-
-d3.selection.prototype.moveToBack = function() {
-  return this.each(function() {
-    var firstChild = this.parentNode.firstChild;
-    if (firstChild) {
-      this.parentNode.insertBefore(this, firstChild);
-    }
-  });
-};
-
-
 let setup = () => {
-  if(!geo || !user) {
+  if(!geo) {
     return;
   }
 
   container.classed("loading", true);
   const width = 1920;
-  const height = Math.round(width/1.85);
+  const height = Math.round(width/1.82);
 
   svg
     .attr('viewBox', `0 0 ${width} ${height}`)
@@ -56,7 +40,7 @@ let setup = () => {
     .pathGenerator(geoPath)
     .hexRadius(6);
 
-  hex = hexgrid(user);
+  hex = hexgrid([]);
 
   const colourScale = d3
     .scaleSequential(function(t) {
@@ -96,19 +80,15 @@ let setup = () => {
 };
 
 let update = (push) => {
-  if(!geo || !user) {
+  return;
+  if(!geo) {
     return;
   }
 
-  var push = [{
-    City: "New York City",
-    Population: "100",
-    lat: "40.7141667",
-    lng: "-74.0063889"
-  }];
+  console.log("Update");
 
   const width = 1920;
-  const height = Math.round(width/1.85);
+  const height = Math.round(width/1.82);
 
   var projection = d3.geoRobinson().fitSize(
     [width, height],
@@ -196,14 +176,47 @@ let update = (push) => {
 
 const geoData = d3.json(
   'js/ext/earth-lands-10km.json'
-);
-const points = d3.csv(
-  'js/ext/cities_top_10000_world.csv'
-);
-
-Promise.all([geoData, points]).then(res => {
-  let [geoData, userData] = res;
-  user = userData;
-  geo = geoData;
+).then(res => {
+  geo = res;
   setup();
+
+
+
+  // (function poll(){
+  //    setTimeout(function(){
+  //       d3.json('/api/data')
+  //         .then(res => {
+  //           update(res);
+  //           poll();
+  //         });
+  //   }, 1000);
+  // })();
+
 });
+
+if('serviceWorker' in navigator){
+    // Handler for messages coming from the service worker
+    navigator.serviceWorker.addEventListener('message', function(event){
+        console.log("Client 1 Received Message: " + event.data);
+
+    });
+
+    const channel = new BroadcastChannel('sw-messages');
+    channel.addEventListener('message', event => {
+      console.log('Received', event.data);
+      (function poll() {
+        setTimeout(function() {
+          d3.json('/api/data')
+            .then(res => {
+              update(res);
+              poll();
+            });
+        }, 1000);
+      })();
+
+
+    });
+}
+
+
+
