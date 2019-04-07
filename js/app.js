@@ -4,17 +4,21 @@ const container = d3.select('#container');
 const svg = container.append('svg');
 const element = container.node();
 
+const width = 1920;
+const height = Math.round(width / 1.82);
+
+var geo;
 var data = [];
 
-let setup = (geo) => {
-  if (!geo) {
+var hexgrid;
+
+let setup = (geoData) => {
+  if (!geoData) {
     return;
   }
 
+  geo = geoData;
   container.classed("loading", true);
-  const width = 1920;
-  const height = Math.round(width / 1.82);
-
   svg
     .attr('viewBox', `0 0 ${width} ${height}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
@@ -27,7 +31,7 @@ let setup = (geo) => {
   var geoPath = d3.geoPath()
     .projection(projection);
 
-  const hexgrid = d3.hexgrid()
+  hexgrid = d3.hexgrid()
     .extent([width, height])
     .geography(geo)
     .projection(projection)
@@ -73,13 +77,46 @@ let setup = (geo) => {
   container.classed("loading", false);
 };
 
+
+let update = (data) => {
+  if(!data || !geo) {
+    return;
+  }
+
+  console.log("Update");
+  var projection = d3.geoRobinson().fitSize(
+    [width, height],
+    geo
+  );
+
+  dHex = hexgrid(data);
+  updatedPoints = dHex.grid.layout.filter(x => x.datapoints > 0);
+  // updatedPoints = dHex.grid.layout;
+
+  updatedPoints.forEach(pt => {
+    //d3.selectAll(`path[transform="translate(${pt.x} ${pt.y})"]`)
+    console.log(`translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(4)rotate(180)`);
+    d3.select(`path[transform="translate(${pt.x} ${pt.y})"]`)
+      .raise()
+        .attr('translateZ', '0')
+        .transition()
+        .delay(parseInt(Math.random() * (300 - 100) + 100))
+        .duration(400)
+        .attr("transform", `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(4)rotate(180)`)
+      .transition()
+        .delay(200)
+        .attr("transform", `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(1)rotate(-45)`);
+
+  });
+};
+
 let poll = () => {
   (function poll() {
     setTimeout(function() {
       console.log('Polling for Content...');
       d3.json('/api/data')
         .then(res => {
-          console.log(res);
+          update(res);
           poll();
         }).catch(function(err) {
           console.log(err);

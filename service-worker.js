@@ -23,7 +23,7 @@ class GeoGenerator {
     }
 
     // Build Weights
-    const count = Math.random() * (50 - 10) + 10;
+    const count = 1 // Math.random() * (50 - 10) + 10;
     var points = [];
     for (var i = 0; i < count; i++) {
       const rand = Math.random() * (this.total - 1) + 1;
@@ -78,6 +78,7 @@ self.addEventListener('install', function(event) {
 });
 
 self.addEventListener('activate', function(event) {
+  console.log('[ServiceWorker] Acitvated', version);
   self.clients.matchAll({
     includeUncontrolled: true
   }).then(function(clientList) {
