@@ -95,17 +95,46 @@ let update = (data) => {
 
   updatedPoints.forEach(pt => {
     //d3.selectAll(`path[transform="translate(${pt.x} ${pt.y})"]`)
-    console.log(`translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(4)rotate(180)`);
+    console.log(`translate(${parseInt(pt.x)},${parseInt(pt.y)}) scale(4) rotate(180)`);
+
+
+
+
     d3.select(`path[transform="translate(${pt.x} ${pt.y})"]`)
       .raise()
-        .attr('translateZ', '0')
         .transition()
         .delay(parseInt(Math.random() * (300 - 100) + 100))
         .duration(400)
-        .attr("transform", `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(4)rotate(180)`)
-      .transition()
+        .ease(d3.easeLinear)
+        .attrTween("transform", function() {
+          return d3.interpolateTransformSvg(
+            `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(1)`,
+            `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(4)`
+          );
+        })
+        .transition()
         .delay(200)
-        .attr("transform", `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(1)rotate(-45)`);
+        .ease(d3.easeLinear)
+        .duration(250)
+        .attrTween("transform", function() {
+          return d3.interpolateTransformSvg(
+            `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(4)`,
+            `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(1)`
+          );
+        });
+      // .transition()
+      //   .delay(200)
+      //   .attr("transform", `scale(1)`);
+
+    // d3.select(`path[transform="translate(${pt.x} ${pt.y})"]`)
+    //   .raise()
+    //     .transition()
+    //     .delay(parseInt(Math.random() * (300 - 100) + 100))
+    //     .duration(400)
+    //     .attr("transform", `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(4)rotate(180)`)
+    //   .transition()
+    //     .delay(200)
+    //     .attr("transform", `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(1)rotate(-45)`);
 
   });
 };
