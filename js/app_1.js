@@ -7,13 +7,13 @@ const element = container.node();
 var data = [];
 
 let setup = (geo) => {
-  if (!geo) {
+  if(!geo) {
     return;
   }
 
   container.classed("loading", true);
   const width = 1920;
-  const height = Math.round(width / 1.82);
+  const height = Math.round(width/1.82);
 
   svg
     .attr('viewBox', `0 0 ${width} ${height}`)
@@ -59,37 +59,28 @@ let setup = (geo) => {
       d => (!d.pointDensity ? '#fff' : colourScale(d.pointDensity))
     )
     .style('stroke', '#C0C0C0')
-    .on("click", function(d) {
+    .on("click",function(d){
       d3.select(this)
         .raise()
         .transition()
         .duration(100)
         .attr("transform", `translate(${d.x},${d.y})scale(5)rotate(180)`)
-        .transition()
+      .transition()
         .delay(100)
         .attr("transform", `translate(${d.x},${d.y})scale(1)rotate(0)`);
     });
-
   container.classed("loading", false);
-};
 
-let poll = () => {
-  (function poll() {
-    setTimeout(function() {
-      console.log('Polling for Content...');
-      d3.json('/api/data')
-        .then(res => {
-          console.log(res);
-          poll();
-        }).catch(function(err) {
-          console.log(err);
-        });
-    }, 1000);
-  })();
+  // if('serviceWorker' in navigator) {
+  //   navigator.serviceWorker.controller.postMessage("client:ready");
+  // }
+
 };
 
 
-if ('serviceWorker' in navigator) {
+
+
+if('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
 
     const geoData = d3.json(
@@ -102,13 +93,14 @@ if ('serviceWorker' in navigator) {
       });
 
     Promise.all([geoData, sw]).then(res => {
-      let [geo, sw] = res;
-      console.log("Service Worker Registered. \nScope is " + sw.scope);
-      setup(geo);
-      poll();
-      // Notify Service Worker
+        let [geo, sw] = res;
+        console.log("Service Worker Registered. \nScope is "+ sw.scope);
+        setup(geo);
 
-    }).catch(function(err) {
+        console.log(sw);
+        // Notify Service Worker
+
+    }).catch(function(err){
       console.error("Service Worker Failed to Register. \nError: " + err);
     });
 
@@ -116,26 +108,29 @@ if ('serviceWorker' in navigator) {
 }
 
 
-// if('serviceWorker' in navigator){
-//     // Handler for messages coming from the service worker
-//     navigator.serviceWorker.addEventListener('message', function(event){
-//         console.log("Client 1 Received Message: " + event.data);
+if('serviceWorker' in navigator){
+    // Handler for messages coming from the service worker
+    navigator.serviceWorker.addEventListener('message', function(event){
+        console.log("Client 1 Received Message: " + event.data);
 
-//     });
+    });
 
-//     // const channel = new BroadcastChannel('sw-messages');
-//     // channel.addEventListener('message', event => {
-//     //   console.log('Received', event.data);
-//     //   (function poll() {
-//     //     setTimeout(function() {
-//     //       d3.json('/api/data')
-//     //         .then(res => {
-//     //           update(res);
-//     //           poll();
-//     //         });
-//     //     }, 1000);
-//     //   })();
+    // const channel = new BroadcastChannel('sw-messages');
+    // channel.addEventListener('message', event => {
+    //   console.log('Received', event.data);
+    //   (function poll() {
+    //     setTimeout(function() {
+    //       d3.json('/api/data')
+    //         .then(res => {
+    //           update(res);
+    //           poll();
+    //         });
+    //     }, 1000);
+    //   })();
 
 
-//     // });
-// }
+    // });
+}
+
+
+

@@ -39,15 +39,17 @@
       <a href="https://github.com/RamanNanda" rel="author">Raman Nanda</a>
   </footer>
 
-  <script>
+  <!-- <script>
       if('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/service-worker.js').then(function(reg){
-          console.log("Service Worker Registered. \nScope is "+ reg.scope);
-        }).catch(function(err){
-          console.error("Service Worker Failed to Register. \nError: " + err);
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/service-worker.js').then(function(reg){
+            console.log("Service Worker Registered. \nScope is "+ reg.scope);
+          }).catch(function(err){
+            console.error("Service Worker Failed to Register. \nError: " + err);
+          });
         });
       }
-  </script>
+  </script> -->
   <!-- d3-hexgrid script comes first. -->
   <script src="js/ext/d3-hexgrid.min.js"></script>
   <script src="js/ext/d3.min.js"></script>

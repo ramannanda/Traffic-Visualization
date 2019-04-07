@@ -18,12 +18,11 @@ class GeoGenerator {
   }
 
   calculate() {
-    // Build Weights
-
-    if(!this.data) {
+    if (!this.data) {
       return [];
     }
 
+    // Build Weights
     const count = Math.random() * (50 - 10) + 10;
     var points = [];
     for (var i = 0; i < count; i++) {
@@ -42,11 +41,11 @@ class GeoGenerator {
 
     // Reduce Points
     const results = _.chain(points)
-      .countBy('City') // get each item count
-      .thru(counts => // counts = {Item 1: 4, Item 2: 3, Item 3: 2}
+      .countBy('City')
+      .thru(counts =>
         _.chain(points)
-        .uniqBy('City') // get uniq items
-        .map(item => // set each item count
+        .uniqBy('City')
+        .map(item =>
           _.assign(
             item, { count: counts[item.City] }
           )
@@ -57,73 +56,87 @@ class GeoGenerator {
   }
 }
 
-let setup = (data) => {
-  gen = new GeoGenerator(data);
-};
+var version = 'v0.0.1';
 
-var gen;
-
-
-self.addEventListener('fetch', function(event) {
-  // var requestUrl = new URL(event.request.url);
-  // var keyParam = requestUrl.searchParams.get("key");
-
-  // if (requestUrl.origin === location.origin && event.request.url.includes('/confirmation')) {
-  //   event.respondWith(
-  //     //do something else
-  //     new Response("ok this key is already used " + keyParam, { "status": 200, "statusText": "MyOwnResponseHaha!" })
-  //   )
-  // }
-  // console.log('Caught request for ' + event.request.url);
-  const url = new URL(event.request.url);
-
-  if(url.origin === location.origin &&
-    url.pathname === '/api/data') {
-    console.log('Caught request for ' + event.request.url);
-    const data = gen.calculate() || {};
-    event.respondWith(
-      new Response(JSON.stringify(data), {
-        "status": 200
-      })
-    );
-  } else {
-    event.respondWith(
-      fetch(event.request).then(function(response){
-        return response;
-      })
-    );
-  }
-});
-
-// Install Service Worker
 self.addEventListener('install', function(event) {
-  // self.skipWaiting();
+  console.log('[ServiceWorker] Installed version', version);
   self.importScripts(
     'js/ext/lodash.min.js',
     'js/ext/d3.min.js'
   );
-
   event.waitUntil(
-    d3.csv(
-      'js/ext/cities_top_10000_world.csv'
-    ).then(res => {
-      let data = res;
-      setup(data);
-      console.log('Completed Weighing Data...');
-      const channel = new BroadcastChannel('sw-messages');
-      channel.postMessage({title: 'Hello from SW'});
+    fetch('js/ext/cities_top_10000_world.csv').then(function(response) {
+      return caches.open(version).then(function(cache) {
+        console.log('[ServiceWorker] Cached Population for', version);
+        return cache.put('/api/data', response);
+      });
+    }).then(function() {
+      console.log('[ServiceWorker] Skip waiting on install');
+      return self.skipWaiting();
     })
   );
-
-  console.log('Installed Service-Worker!');
 });
 
-// Service Worker Active
 self.addEventListener('activate', function(event) {
-  console.log('Activated Service-Worker!');
+  self.clients.matchAll({
+    includeUncontrolled: true
+  }).then(function(clientList) {
+    var urls = clientList.map(function(client) {
+      return client.url;
+    });
+    console.log('[ServiceWorker] Matching clients:', urls.join(', '));
+  });
 
-  // setInterval(function() {
-  //   console.log(gen.calculate());
-  // }, 5000);
+  event.waitUntil(
+    caches.keys().then(function(cacheNames) {
+      return Promise.all(
+        cacheNames.map(function(cacheName) {
+          if (cacheName !== version) {
+            console.log('[ServiceWorker] Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(function() {
+      console.log('[ServiceWorker] Claiming clients for version', version);
+      return self.clients.claim();
+    })
+  );
+});
 
+self.addEventListener('fetch', function(event) {
+  const url = new URL(event.request.url);
+  if (url.origin === location.origin &&
+    url.pathname === '/api/data') {
+    console.log('[ServiceWorker] Serving random.jpg for', event.request.url);
+    event.respondWith(
+      caches.open(version).then(function(cache) {
+        return cache.match('/api/data').then(function(response) {
+          if (!response) {
+            console.error('[ServiceWorker] Missing cache!');
+            return response;
+          } else {
+            return response.text().then(function(body) {
+              const data = d3.csvParse(body);
+              const randomData = new GeoGenerator(data).calculate();
+              return new Response(JSON.stringify(randomData), {
+                "status": 200,
+                "statusText": "OK",
+                "headers": {
+                  'Content-Type': 'application/json'
+                }
+              });
+            });
+          }
+        });
+      })
+    );
+  }
+  if (event.request.url.includes('/version')) {
+    event.respondWith(new Response(version, {
+      headers: {
+        'content-type': 'text/plain'
+      }
+    }));
+  }
 });
