@@ -4,6 +4,7 @@ Experiment using D3 / Service Workers
 
 ## Links
 
+- https://vimeo.com/11613517
 - https://pusher.com/tutorials/live-graph-d3
 - https://bl.ocks.org/larsvers/ec4f4c96941b0fa97869184ab9a9fb5b
 - http://bl.ocks.org/phil-pedruco/7745589
