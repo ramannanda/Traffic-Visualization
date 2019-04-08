@@ -40,13 +40,6 @@ let setup = (geoData) => {
 
   const hex = hexgrid([]);
 
-  const colourScale = d3
-    .scaleSequential(function(t) {
-      var tNew = Math.pow(t, 10);
-      return d3.interpolateViridis(tNew);
-    })
-    .domain([...hex.grid.extentPointDensity].reverse());
-
   svg
     .append('g')
     .selectAll('path')
@@ -59,27 +52,16 @@ let setup = (geoData) => {
     })
     .attr('transform', d => `translate(${d.x} ${d.y})`)
     .style(
-      'fill',
-      d => (!d.pointDensity ? '#fff' : colourScale(d.pointDensity))
+      'fill','#fff'
     )
-    .style('stroke', '#C0C0C0')
-    .on("click", function(d) {
-      d3.select(this)
-        .raise()
-        .transition()
-        .duration(100)
-        .attr("transform", `translate(${d.x},${d.y})scale(5)rotate(180)`)
-        .transition()
-        .delay(100)
-        .attr("transform", `translate(${d.x},${d.y})scale(1)rotate(0)`);
-    });
+    .style('stroke', '#C0C0C0');
 
   container.classed("loading", false);
 };
 
 
-let update = (data) => {
-  if(!data || !geo) {
+let update = (delta) => {
+  if(!delta || !geo) {
     return;
   }
 
@@ -89,17 +71,44 @@ let update = (data) => {
     geo
   );
 
-  dHex = hexgrid(data);
-  updatedPoints = dHex.grid.layout.filter(x => x.datapoints > 0);
+  dHex = hexgrid(delta);
+
+  updatedPoints = dHex.grid.layout;
+  for(var i = 0; i < updatedPoints.length; i++) {
+    dHex.grid.layout[i].index = i;
+  }
+  updatedPoints = updatedPoints.filter(x => x.datapoints > 0);
   // updatedPoints = dHex.grid.layout;
 
+  // var colorScale = d3.scaleSequential(d3.interpolateInferno)
+  //   .domain([0, 1000]);
+  data = data.concat(delta);
+  data = _.chain(data)
+      .countBy('City')
+      .thru(counts =>
+        _.chain(data)
+        .uniqBy('City')
+        .map(item =>
+          _.assign(
+            item, { count: counts[item.City] }
+          )
+        ).value()
+      )
+      .value();
+
+  hex = hexgrid(data);
+
+  const colorScale = d3
+    .scaleSequential(function(t) {
+      var tNew = Math.pow(t, 10);
+      return d3.interpolateViridis(t);
+    })
+    .domain([0, 10].reverse());
+
   updatedPoints.forEach(pt => {
+
+    console.log(hex.grid.layout[pt.index].datapoints);
     //d3.selectAll(`path[transform="translate(${pt.x} ${pt.y})"]`)
-    console.log(`translate(${parseInt(pt.x)},${parseInt(pt.y)}) scale(4) rotate(180)`);
-
-
-
-
     d3.select(`path[transform="translate(${pt.x} ${pt.y})"]`)
       .raise()
         .transition()
@@ -108,18 +117,22 @@ let update = (data) => {
         .ease(d3.easeLinear)
         .attrTween("transform", function() {
           return d3.interpolateTransformSvg(
-            `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(1)`,
-            `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(4)`
+            `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(1)rotate(0)`,
+            `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(4)rotate(245)`
           );
         })
+        .style(
+          'fill',
+          d => (!hex.grid.layout[pt.index].datapoints ? '#fff' : colorScale(hex.grid.layout[pt.index].datapoints))
+        )
         .transition()
-        .delay(200)
+        .delay(parseInt(Math.random() * (300 - 100) + 100))
         .ease(d3.easeLinear)
         .duration(250)
         .attrTween("transform", function() {
           return d3.interpolateTransformSvg(
-            `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(4)`,
-            `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(1)`
+            `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(4)rotate(245)`,
+            `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(1)rotate(0)`
           );
         });
       // .transition()
@@ -150,7 +163,7 @@ let poll = () => {
         }).catch(function(err) {
           console.log(err);
         });
-    }, 1000);
+    }, 5000);
   })();
 };
 

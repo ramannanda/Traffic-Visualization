@@ -50,7 +50,8 @@ class GeoGenerator {
             item, { count: counts[item.City] }
           )
         ).value()
-      ).value();
+      )
+      .value();
 
     return results;
   }
