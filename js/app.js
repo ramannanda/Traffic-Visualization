@@ -78,10 +78,7 @@ let update = (delta) => {
     dHex.grid.layout[i].index = i;
   }
   updatedPoints = updatedPoints.filter(x => x.datapoints > 0);
-  // updatedPoints = dHex.grid.layout;
 
-  // var colorScale = d3.scaleSequential(d3.interpolateInferno)
-  //   .domain([0, 1000]);
   data = data.concat(delta);
   data = _.chain(data)
       .countBy('City')
@@ -111,44 +108,30 @@ let update = (delta) => {
     //d3.selectAll(`path[transform="translate(${pt.x} ${pt.y})"]`)
     d3.select(`path[transform="translate(${pt.x} ${pt.y})"]`)
       .raise()
-        .transition()
-        .delay(parseInt(Math.random() * (300 - 100) + 100))
-        .duration(400)
-        .ease(d3.easeLinear)
-        .attrTween("transform", function() {
-          return d3.interpolateTransformSvg(
-            `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(1)rotate(0)`,
-            `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(4)rotate(245)`
-          );
-        })
-        .style(
-          'fill',
-          d => (!hex.grid.layout[pt.index].datapoints ? '#fff' : colorScale(hex.grid.layout[pt.index].datapoints))
-        )
-        .transition()
-        .delay(parseInt(Math.random() * (300 - 100) + 100))
-        .ease(d3.easeLinear)
-        .duration(250)
-        .attrTween("transform", function() {
-          return d3.interpolateTransformSvg(
-            `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(4)rotate(245)`,
-            `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(1)rotate(0)`
-          );
-        });
-      // .transition()
-      //   .delay(200)
-      //   .attr("transform", `scale(1)`);
-
-    // d3.select(`path[transform="translate(${pt.x} ${pt.y})"]`)
-    //   .raise()
-    //     .transition()
-    //     .delay(parseInt(Math.random() * (300 - 100) + 100))
-    //     .duration(400)
-    //     .attr("transform", `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(4)rotate(180)`)
-    //   .transition()
-    //     .delay(200)
-    //     .attr("transform", `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(1)rotate(-45)`);
-
+      .transition()
+      .delay(parseInt(Math.random() * (300 - 100) + 100))
+      .duration(400)
+      .ease(d3.easeLinear)
+      .attrTween("transform", function() {
+        return d3.interpolateTransformSvg(
+          `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(1)rotate(0)`,
+          `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(4)rotate(245)`
+        );
+      })
+      .style(
+        'fill',
+        d => (!hex.grid.layout[pt.index].datapoints ? '#fff' : colorScale(hex.grid.layout[pt.index].datapoints))
+      )
+      .transition()
+      .delay(parseInt(Math.random() * (300 - 100) + 100))
+      .ease(d3.easeLinear)
+      .duration(250)
+      .attrTween("transform", function() {
+        return d3.interpolateTransformSvg(
+          `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(4)rotate(245)`,
+          `translate(${parseInt(pt.x)},${parseInt(pt.y)})scale(1)rotate(0)`
+        );
+      });
   });
 };
 
@@ -163,7 +146,7 @@ let poll = () => {
         }).catch(function(err) {
           console.log(err);
         });
-    }, 5000);
+    }, 1000);
   })();
 };
 
@@ -193,28 +176,3 @@ if ('serviceWorker' in navigator) {
 
   });
 }
-
-
-// if('serviceWorker' in navigator){
-//     // Handler for messages coming from the service worker
-//     navigator.serviceWorker.addEventListener('message', function(event){
-//         console.log("Client 1 Received Message: " + event.data);
-
-//     });
-
-//     // const channel = new BroadcastChannel('sw-messages');
-//     // channel.addEventListener('message', event => {
-//     //   console.log('Received', event.data);
-//     //   (function poll() {
-//     //     setTimeout(function() {
-//     //       d3.json('/api/data')
-//     //         .then(res => {
-//     //           update(res);
-//     //           poll();
-//     //         });
-//     //     }, 1000);
-//     //   })();
-
-
-//     // });
-// }
