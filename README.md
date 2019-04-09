@@ -17,3 +17,5 @@ Experiment using D3 / Service Workers
 - https://stackoverflow.com/questions/37445495/binning-an-array-in-javascript-for-a-histogram
 - https://stackoverflow.com/questions/30203362/how-to-generate-a-random-weighted-distribution-of-elements
 - https://stackoverflow.com/questions/8435183/generate-a-weighted-random-number
+- https://bl.ocks.org/bytesbysophie/952a1003dd188410e9c6262b68a65f9a
+- https://bl.ocks.org/NGuernse/284749c905b592d8d9cf7927864c0ff5

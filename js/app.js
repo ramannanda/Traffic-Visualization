@@ -7,14 +7,30 @@ const element = container.node();
 const width = 1920;
 const height = Math.round(width / 1.82);
 const padding = 20;
-const barHeight = 100;
+const barHeight = 200;
 
 var geo;
 var data = [];
+var deltas = [];
 
 var hexgrid;
 
+var transition;
+var xScale;
+var yScale;
+var xAxis;
+var yAxis;
 
+var line;
+var area;
+
+var limit = 60 * 1,
+  duration = 1000,
+  n = 100,
+  now = new Date(Date.now() - duration);
+
+const random = d3.randomNormal(0, 1);
+var pushData = d3.range(n).map(random);
 
 let setup = (geoData) => {
   if (!geoData) {
@@ -24,7 +40,7 @@ let setup = (geoData) => {
   geo = geoData;
   container.classed("loading", true);
   svg
-    .attr('viewBox', `0 0 ${width} ${height + padding + barHeight}`)
+    .attr('viewBox', `0 0 ${width} ${height + (padding * 2) + barHeight}`)
     .attr('preserveAspectRatio', 'xMidYMid meet');
 
   const projection = d3.geoRobinson().fitSize(
@@ -61,53 +77,63 @@ let setup = (geoData) => {
     .style('stroke', '#C0C0C0');
 
 
-  var x = d3.scaleBand()
-    .range([0, width])
-    .padding(0.1);
-  var y = d3.scaleLinear()
-    .range([barHeight, 0]);
+  xScale = d3.scaleTime()
+    .domain([now - (n - 2) * duration, now - duration])
+    .range([0, width]);
 
-  var g = svg.append("g")
-    .attr("transform", "translate(0," + (height + padding) + ")");
+  yScale = d3.scaleLinear()
+    .range([barHeight, 0])
+    .domain([0, 50]);
 
-  d3.csv("js/ext/sales.csv").then(function(data) {
-    x.domain(data.map(function(d) {
-      return d.Run;
-    }));
-    y.domain([0, d3.max(data, function(d) {
-      return Number(d.Speed);
-    })]);
+  area = d3.area()
+    .x((d, i) => xScale(now - (n - 1 - i) * duration))
+    .y0(barHeight)
+    .y1((d, i) => yScale(d))
+    .curve(d3.curveBasis);
 
-    g.append("g")
-      .attr("transform", "translate(0," + barHeight + ")")
-      .call(d3.axisBottom(x));
+  line = d3.line()
+    .x((d, i) => xScale(now - (n - 1 - i) * duration))
+    .y((d, i) => yScale(d))
+    .curve(d3.curveBasis);
 
-    g.append("g")
-      .call(d3.axisLeft(y))
-      .append("text")
-      .attr("fill", "#000")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", "0.71em")
-      .attr("text-anchor", "end")
-      .text("Speed");
+  const g = svg.append("g")
+    .attr("transform", `translate(0, ${padding + height})`);
 
-    g.selectAll(".bar")
-      .data(data)
-      .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function(d) {
-        return x(d.Run);
-      })
-      .attr("y", function(d) {
-        return y(Number(d.Speed));
-      })
-      .attr("width", x.bandwidth())
-      .attr("height", function(d) {
-        return barHeight - y(Number(d.Speed));
-      });
-  });
+  svg.append("defs")
+    .append("clipPath")
+    .attr("id", "clip")
+    .append("rect")
+    .attr("width", width)
+    .attr("height", barHeight);
 
+  xAxis = d3.axisBottom(xScale).ticks(15).tickSize(-barHeight);
+  yAxis = d3.axisLeft(yScale).ticks(5);
+
+  g.append("g")
+    .attr("class", "axis--x")
+    .attr("transform", "translate(0," + barHeight + ")")
+    .call(xAxis);
+
+  g.append('g')
+    .attr('class', 'axis--y')
+    .call(yAxis);
+
+  transition = d3
+    .transition()
+    .duration(duration)
+    .ease(d3.easeLinear);
+
+  const areapath = g.append("g")
+    .attr("clip-path", "url(#clip)")
+    .append("path")
+    .datum(pushData)
+    .attr("class", "area");
+
+  const path = g.append("g")
+    .attr("clip-path", "url(#clip)")
+    .append("path")
+    .datum(pushData)
+    .attr("class", "line");
 
   container.classed("loading", false);
 };
@@ -125,6 +151,7 @@ let update = (delta) => {
   );
 
   dHex = hexgrid(delta);
+  deltas.push(delta);
 
   updatedPoints = dHex.grid.layout;
   for (var i = 0; i < updatedPoints.length; i++) {
@@ -185,20 +212,61 @@ let update = (delta) => {
   });
 };
 
-// let poll = () => {
-//   (function poll() {
-//     setTimeout(function() {
-//       console.log('Polling for Content...');
-//       d3.json('/api/data')
-//         .then(res => {
-//           update(res);
-//           poll();
-//         }).catch(function(err) {
-//           console.log(err);
-//         });
-//     }, 1000);
-//   })();
-// };
+let poll = () => {
+  (function poll() {
+    setTimeout(function() {
+      console.log('Polling for Content...');
+      d3.json('/api/data')
+        .then(res => {
+          update(res);
+          poll();
+        }).catch(function(err) {
+          console.log(err);
+        });
+    }, 500);
+  })();
+};
+
+var tick = function() {
+    console.log('Polling for Content...');
+    transition = transition
+      .each(function() {
+        // update the domains
+        now = new Date();
+        xScale.domain([now - (n - 2) * duration, now - duration]);
+        // push the accumulated count onto the back, and reset the count
+        // pushData.push(random());
+        // redraw the line
+        if(deltas.length > 0) {
+          pushData.push(deltas[deltas.length - 1].length);
+        }
+
+        d3.select(".line").attr("d", line).attr("transform", null);
+        // slide the line left
+        d3.select('.line')
+          .transition(transition)
+          .attr("transform", `translate(${(xScale(now - (n - 1) * duration))})`);
+
+        // slide the x-axis left
+        d3.select(".axis--x")
+          .transition(transition)
+          .call(xAxis);
+
+        // Redraw the area.
+        d3.select('.area')
+          .attr("d", area)
+          .attr("transform", null);
+
+        d3.select('.area')
+          .transition(transition)
+          .attr("transform", `translate(${xScale(now - (n - 1) * duration)})`)
+
+        // pop the old data point off the front
+        pushData.shift();
+      })
+      .transition()
+      .on("start", tick);
+  };
 
 
 if ('serviceWorker' in navigator) {
@@ -217,7 +285,8 @@ if ('serviceWorker' in navigator) {
       let [geo, sw] = res;
       console.log("Service Worker Registered. \nScope is " + sw.scope);
       setup(geo);
-      // poll();
+      poll();
+      tick();
       // Notify Service Worker
 
     }).catch(function(err) {
