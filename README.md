@@ -1,7 +1,7 @@
 # Traffic-Visualization
 Experiment using D3 / Service Workers
 
-An attmept to create a live D3 visualization that would recieve push events from a remote server. The goal was to use a service worker as an abstraction for a live production environment. 
+An attempt to create a live D3 visualization that would recieve push events from a remote server. The goal was to use a service worker as an abstraction for a live production environment. 
 
 ## Setup
 - ```npm install```
