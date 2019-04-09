@@ -14,7 +14,7 @@ An attempt to create a live D3 visualization that would recieve push events from
 ## Observations
 
 - Initally thought I could push data out at an interval from the service worker and have the page recieve these events, but i don't think that's possible. I fell back on the client polling a endpoint that would be intercepted by the Service Worker - [Stack Overflow](https://stackoverflow.com/questions/53178703/timer-with-notifications-using-service-worker)
-- D3-Hexgrid is an amazing library. The only feature I would love to see would be allowing incremental updates (which is a feature requested by an upstream dependency: d3-hexbin) [Github](https://github.com/d3/d3-hexbin/issues/3)
+- D3-Hexgrid is an amazing library. The only feature I would love to see would be allowing incremental updates (which is a feature requested by an upstream dependency: d3-hexbin) - [Github](https://github.com/d3/d3-hexbin/issues/3)
 
 ## Links / Inspiration
 
