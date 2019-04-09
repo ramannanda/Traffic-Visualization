@@ -22,6 +22,6 @@ gulp.task('default', gulp.series('scss', function browserDev(done) {
     browserSync.reload();
     done();
   }));
-  gulp.watch(['*.html']).on('change', browserSync.reload);
+  gulp.watch(['*.html', '*.js']).on('change', browserSync.reload);
   done();
 }));

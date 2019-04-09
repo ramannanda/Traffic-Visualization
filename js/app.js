@@ -212,6 +212,7 @@ let update = (delta) => {
   });
 };
 
+// Retrieve Data from the Mock Server, Trigger the Graph Update
 let poll = () => {
   (function poll() {
     setTimeout(function() {
@@ -227,41 +228,37 @@ let poll = () => {
   })();
 };
 
+// Update Line Graph
 var tick = function() {
     console.log('Polling for Content...');
     transition = transition
       .each(function() {
-        // update the domains
+
         now = new Date();
         xScale.domain([now - (n - 2) * duration, now - duration]);
-        // push the accumulated count onto the back, and reset the count
-        // pushData.push(random());
-        // redraw the line
+
         if(deltas.length > 0) {
           pushData.push(deltas[deltas.length - 1].length);
         }
 
         d3.select(".line").attr("d", line).attr("transform", null);
-        // slide the line left
+
         d3.select('.line')
           .transition(transition)
           .attr("transform", `translate(${(xScale(now - (n - 1) * duration))})`);
 
-        // slide the x-axis left
         d3.select(".axis--x")
           .transition(transition)
           .call(xAxis);
 
-        // Redraw the area.
         d3.select('.area')
           .attr("d", area)
           .attr("transform", null);
 
         d3.select('.area')
           .transition(transition)
-          .attr("transform", `translate(${xScale(now - (n - 1) * duration)})`)
+          .attr("transform", `translate(${xScale(now - (n - 1) * duration)})`);
 
-        // pop the old data point off the front
         pushData.shift();
       })
       .transition()
@@ -287,7 +284,6 @@ if ('serviceWorker' in navigator) {
       setup(geo);
       poll();
       tick();
-      // Notify Service Worker
 
     }).catch(function(err) {
       console.error("Service Worker Failed to Register. \nError: " + err);

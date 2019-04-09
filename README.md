@@ -2,8 +2,22 @@
 Experiment using D3 / Service Workers
 
 
-## Links
+## Setup
+- ```npm install```
+- ```npm start```
 
+
+
+![Screenshot](docs/ss.png)
+
+## Observations
+
+- Initally thought I could push data out at an interval from the service worker and have the page recieve these events, but i don't think that's possible. - [Stack Overflow](https://stackoverflow.com/questions/53178703/timer-with-notifications-using-service-worker)
+- D3-Hexgrid is an amazing library. The only feature I would love to see would be if they would allow incremental updates of content (which is a feature requested by an upstream dependency: d3-hexbin) [Github](https://github.com/d3/d3-hexbin/issues/3)
+
+## Links / Inspiration
+
+- https://observablehq.com/@larsvers/hexgrid-maps-with-d3-hexgrid
 - https://vimeo.com/11613517
 - https://pusher.com/tutorials/live-graph-d3
 - https://bl.ocks.org/larsvers/ec4f4c96941b0fa97869184ab9a9fb5b

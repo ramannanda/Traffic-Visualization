@@ -1,37 +1,38 @@
-
 $screen-sm-min: 576px;
 $screen-md-min: 768px;
 $screen-lg-min: 1024px;
 $screen-xl-min: 1200px;
 
-$font-family-base: "PT Serif", serif;
-$font-family-heading: "PT Sans", sans-serif;
+$font-family-base: "PT Serif",
+serif;
+$font-family-heading: "PT Sans",
+sans-serif;
 
 @mixin sm {
-   @media (min-width: #{$screen-sm-min}) {
-       @content;
-   }
+  @media (min-width: #{$screen-sm-min}) {
+    @content;
+  }
 }
 
 // Medium devices
 @mixin md {
-   @media (min-width: #{$screen-md-min}) {
-       @content;
-   }
+  @media (min-width: #{$screen-md-min}) {
+    @content;
+  }
 }
 
 // Large devices
 @mixin lg {
-   @media (min-width: #{$screen-lg-min}) {
-       @content;
-   }
+  @media (min-width: #{$screen-lg-min}) {
+    @content;
+  }
 }
 
 // Extra large devices
 @mixin xl {
-   @media (min-width: #{$screen-xl-min}) {
-       @content;
-   }
+  @media (min-width: #{$screen-xl-min}) {
+    @content;
+  }
 }
 
 body {
@@ -51,17 +52,24 @@ body {
     padding: 4em;
   }
 
-  header, footer, aside, h1, h2, h3, h4 {
+  header,
+  footer,
+  aside,
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: $font-family-heading;
   }
 
   @for $index from 1 through 4 {
-    h#{$index}{
+    h#{$index} {
       color: #000;
     }
   }
 
-  header, footer {
+  header,
+  footer {
     color: #636363;
     font-size: small;
 
@@ -112,58 +120,36 @@ body {
       color: #FFF;
     }
 
-    div[class^='placeholder-'], div[class*=' placeholder-'] {
+    div[class^='placeholder-'],
+    div[class*=' placeholder-'] {
       display: none;
     }
 
-    &.loading div[class^='placeholder-'], div[class*=' placeholder-'] {
+    &.loading div[class^='placeholder-'],
+    div[class*=' placeholder-'] {
       display: block;
     }
   }
 
 }
 
-@-webkit-keyframes pulse {
-  from {
-    -webkit-transform: scale3d(1, 1, 1);
-    transform: scale3d(1, 1, 1);
-  }
-
-  50% {
-    -webkit-transform: scale3d(1.05, 1.05, 1.05);
-    transform: scale3d(1.05, 1.05, 1.05);
-  }
-
-  to {
-    -webkit-transform: scale3d(1, 1, 1);
-    transform: scale3d(1, 1, 1);
-  }
+.line {
+  fill: none;
+  stroke: darkslategrey;
+  stroke-width: 1.5px;
 }
 
-@keyframes pulse {
-  from {
-    -webkit-transform: scale3d(1, 1, 1);
-    transform: scale3d(1, 1, 1);
-  }
-
-  50% {
-    -webkit-transform: scale3d(1.05, 1.05, 1.05);
-    transform: scale3d(1.05, 1.05, 1.05);
-  }
-
-  to {
-    -webkit-transform: scale3d(1, 1, 1);
-    transform: scale3d(1, 1, 1);
-  }
+.area {
+  fill: rgb(189, 223, 38);
+  opacity: 0.75;
 }
 
-.pulse {
-  -webkit-animation-name: pulse;
-  animation-name: pulse;
-  animation-iteration-count: infinite;
+.axis--x .tick line {
+  stroke: gainsboro;
 }
 
-div[class^='placeholder-'], div[class*=' placeholder-'] {
+div[class^='placeholder-'],
+div[class*=' placeholder-'] {
   background-color: #c0c0c0;
   width: 100%;
   padding-top: 100%;
